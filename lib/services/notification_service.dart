@@ -76,9 +76,6 @@ class NotificationService {
       androidAllowWhileIdle: true,
     );
 
-    for (final element in (await localNotificationsPlugin.pendingNotificationRequests())) {
-      Logger().wtf("Pending notif : ${element.id} Time: $endTime");
-
-    }
+    Logger().wtf("Pending notif : ${(await localNotificationsPlugin.pendingNotificationRequests()).length}");
   }
 }

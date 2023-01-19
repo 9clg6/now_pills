@@ -49,6 +49,8 @@ class NotificationCreationController extends ChangeNotifier {
     final now = DateTime.now();
     final duration = int.parse(selectedDuration[0]);
 
+    Logger().w("Selected hours size: ${selectedHours.length}");
+
     for(int i = 0 ; i < duration ; i++){
       for (final hourIndex in selectedHours) {
         final splitHour = possibleHours.elementAt(hourIndex).split("h");
@@ -63,7 +65,6 @@ class NotificationCreationController extends ChangeNotifier {
             channel: "live",
             id: nController.increaseCounter(),
           );
-
         } else {
           if(selectedReccu == 1 && int.parse(selectedDuration[0]) == 1){
             Logger().e("Can't schedule dat anterior date");
