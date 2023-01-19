@@ -13,25 +13,22 @@ class NotificationCreationController extends ChangeNotifier {
   String get selectedDuration => _selectedDuration;
   set selectedDuration(String value) {
     _selectedDuration = value;
-    Logger().i("Selected duration: $selectedDuration");
     notifyListeners();
   }
 
-  int _selectedReccu = 0;
-  int get selectedReccu => _selectedReccu;
+  int _selectedRecurrence = 0;
+  int get selectedRecurrence => _selectedRecurrence;
+  set selectedRecurrence(int value) {
+    _selectedRecurrence = value;
+    notifyListeners();
+  }
 
   final _selectedHours = <int>[];
   List<int> get selectedHours => _selectedHours;
 
-  set selectedReccu(int value) {
-    _selectedReccu = value;
-    notifyListeners();
-  }
-
   int increaseCounter(){
     _notificationCounter++;
     notifyListeners();
-    Logger().i("New counter: $notificationCounter");
     return notificationCounter;
   }
 
@@ -49,8 +46,6 @@ class NotificationCreationController extends ChangeNotifier {
     final now = DateTime.now();
     final duration = int.parse(selectedDuration[0]);
 
-    Logger().w("Selected hours size: ${selectedHours.length}");
-
     for(int i = 0 ; i < duration ; i++){
       for (final hourIndex in selectedHours) {
         final splitHour = possibleHours.elementAt(hourIndex).split("h");
@@ -66,9 +61,9 @@ class NotificationCreationController extends ChangeNotifier {
             id: nController.increaseCounter(),
           );
         } else {
-          if(selectedReccu == 1 && int.parse(selectedDuration[0]) == 1){
-            Logger().e("Can't schedule dat anterior date");
-            throw ScheduleException("Can't schedule at anterior date");
+          if(selectedRecurrence == 1 && int.parse(selectedDuration[0]) == 1){
+            Logger().e("Can't schedule at anterior date");
+            throw ScheduleException("Vous ne pouvez pas programmer un rappel à une date antérieure");
           }
         }
       }
@@ -78,7 +73,8 @@ class NotificationCreationController extends ChangeNotifier {
 
   void resetInput() {
     selectedHours.clear();
-    selectedReccu = 0;
+    selectedRecurrence = 0;
+    selectedDuration = possibleDuration.first;
     notifyListeners();
   }
 }

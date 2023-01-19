@@ -2,12 +2,14 @@ import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:flutter_native_timezone/flutter_native_timezone.dart';
 import 'package:logger/logger.dart';
+import 'package:now_pills/exceptions/plugin_not_initialized_exception.dart';
 import 'package:timezone/data/latest.dart' as tzdata;
 import 'package:timezone/timezone.dart' as tz;
 
 class NotificationService {
   static final NotificationService _instance = NotificationService._internal();
   late FlutterLocalNotificationsPlugin localNotificationsPlugin;
+  bool _isInitialized = false;
 
   NotificationService._internal();
 
@@ -26,14 +28,14 @@ class NotificationService {
 
     const androidSetting = AndroidInitializationSettings('@mipmap/pills_notif');
     const iosSetting = DarwinInitializationSettings(requestSoundPermission: true);
-
     const initSettings = InitializationSettings(android: androidSetting, iOS: iosSetting);
 
-    await localNotificationsPlugin.initialize(initSettings).then((_) {
-      debugPrint('setupPlugin: setup success');
-    }).catchError((Object error) {
-      debugPrint('Error: $error');
-    });
+    _isInitialized = await localNotificationsPlugin.initialize(initSettings) ?? false;
+    if(_isInitialized){
+      Logger().i("LocalNotificationsPlugin initialized ✅");
+    } else {
+      Logger().e("LocalNotificationsPlugin initialization fail ❌");
+    }
   }
 
   Future<void> addNotification({
@@ -44,9 +46,10 @@ class NotificationService {
     required String sound,
     required int id,
   }) async {
-    final soundFile = sound.replaceAll('.mp3', '');
-    final notificationSound = sound == '' ? null : RawResourceAndroidNotificationSound(soundFile);
-    final androidDetail = AndroidNotificationDetails(
+    if(_isInitialized){
+      final soundFile = sound.replaceAll('.mp3', '');
+      final notificationSound = sound == '' ? null : RawResourceAndroidNotificationSound(soundFile);
+      final androidDetail = AndroidNotificationDetails(
         channel,
         channel,
         playSound: true,
@@ -55,27 +58,28 @@ class NotificationService {
         priority: Priority.high,
         icon: "@mipmap/pills_notif",
         channelShowBadge: true,
-    );
+      );
 
-    final iosDetail = sound == ''
-        ? null
-        : DarwinNotificationDetails(presentSound: true, sound: sound);
+      final iosDetail = sound == ''
+          ? null
+          : DarwinNotificationDetails(presentSound: true, sound: sound);
 
-    final noticeDetail = NotificationDetails(
-      iOS: iosDetail,
-      android: androidDetail,
-    );
+      final noticeDetail = NotificationDetails(
+        iOS: iosDetail,
+        android: androidDetail,
+      );
 
-    await localNotificationsPlugin.zonedSchedule(
-      id,
-      title,
-      body.toLowerCase(),
-      endTime,
-      noticeDetail,
-      uiLocalNotificationDateInterpretation: UILocalNotificationDateInterpretation.absoluteTime,
-      androidAllowWhileIdle: true,
-    );
-
-    Logger().wtf("Pending notif : ${(await localNotificationsPlugin.pendingNotificationRequests()).length}");
+      await localNotificationsPlugin.zonedSchedule(
+        id,
+        title,
+        body.toLowerCase(),
+        endTime,
+        noticeDetail,
+        uiLocalNotificationDateInterpretation: UILocalNotificationDateInterpretation.absoluteTime,
+        androidAllowWhileIdle: true,
+      );
+    } else {
+      throw PluginNotInitializedException("LocalNotificationPlugin is not initialized");
+    }
   }
 }

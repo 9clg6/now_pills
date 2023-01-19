@@ -28,9 +28,6 @@ final possibleDuration = <String>[
 ];
 
 final possibleHours = <String>[
-  '${DateTime.now().hour}h${DateTime.now().minute+1}',
-  '${DateTime.now().hour}h${DateTime.now().minute+2}',
-  '${DateTime.now().hour}h${DateTime.now().minute+3}',
   '4h00',
   '4h30',
   '5h00',

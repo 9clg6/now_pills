@@ -53,19 +53,19 @@ class _HomePageState extends State<HomePage> {
                           if (_formKey.currentState!.validate() && _nController.selectedHours.isNotEmpty) {
                             try {
                               _nController.configureNotification(_pillNameInputController.text, _nController);
-                              /*
+
                               showDialog(
                                 context: context,
                                 builder: (context) {
                                   return _buildSuccessDialog();
                                 },
                               );
-                               */
+
                             } catch (e) {
                               showDialog(
                                 context: context,
                                 builder: (_) {
-                                  return _buildErrorDialog(context);
+                                  return _buildErrorDialog(context, e as String);
                                 },
                               );
                             }
@@ -89,7 +89,7 @@ class _HomePageState extends State<HomePage> {
     return AlertDialog(
       title: const Text("On a hâte !"),
       content:
-          int.parse(_nController.selectedDuration[0]) > 1 || _nController.selectedReccu > 1 || _nController.selectedHours.length > 1
+          int.parse(_nController.selectedDuration[0]) > 1 || _nController.selectedRecurrence > 1 || _nController.selectedHours.length > 1
               ? const Text("Vos alertes ont été créees avec succès ! 💊")
               : const Text("Votre alerte a été créee avec succès ! 💊"),
       actions: [
@@ -147,15 +147,13 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
-  AlertDialog _buildErrorDialog(BuildContext context) {
+  AlertDialog _buildErrorDialog(BuildContext context, String e) {
     return AlertDialog(
-      title: const Text("Il fallait y penser avant..."),
+      title: const Text("Ooops... une erreur c'est produite"),
       content: Column(
         mainAxisSize: MainAxisSize.min,
-        children: const [
-          Text("Vous ne pouvez pas programmer un rappel à une date antérieur à l'heure actuelle."),
-          SizedBox(height: 15),
-          Text("Ou changez la durée de prise en cliquant sur ”Modifier la durée de prise”")
+        children: [
+          Text(e),
         ],
       ),
       actions: [
@@ -278,13 +276,13 @@ class _HomePageState extends State<HomePage> {
     return DropdownButtonHideUnderline(
       child: DropdownButton<String>(
         icon: const SizedBox.shrink(),
-        value: possibleRecurrences.elementAt(_nController.selectedReccu),
+        value: possibleRecurrences.elementAt(_nController.selectedRecurrence),
         onChanged: (value) {
           if (value != null) {
-            if (possibleRecurrences.indexOf(value) < _nController.selectedReccu) {
+            if (possibleRecurrences.indexOf(value) < _nController.selectedRecurrence) {
               _nController.selectedHours.clear();
             }
-            _nController.selectedReccu = possibleRecurrences.indexOf(value);
+            _nController.selectedRecurrence = possibleRecurrences.indexOf(value);
             Logger().i("Selected reccurence: ${possibleRecurrences.indexOf(value)}");
           }
         },
@@ -305,9 +303,9 @@ class _HomePageState extends State<HomePage> {
   }
 
   String buildDisplayText() {
-    if (_nController.selectedHours.length < _nController.selectedReccu + 1 && _nController.selectedHours.isNotEmpty) {
+    if (_nController.selectedHours.length < _nController.selectedRecurrence + 1 && _nController.selectedHours.isNotEmpty) {
       return "⏳";
-    } else if (_nController.selectedHours.length == _nController.selectedReccu + 1) {
+    } else if (_nController.selectedHours.length == _nController.selectedRecurrence + 1) {
       return "✅";
     }
     return "heures";
@@ -325,7 +323,7 @@ class _HomePageState extends State<HomePage> {
                 Padding(
                   padding: const EdgeInsets.symmetric(vertical: 20),
                   child: Text(
-                    "Selectionnez ${_nController.selectedReccu + 1} ${_nController.selectedReccu > 1 ? "heures" : "heure"} de rappel",
+                    "Selectionnez ${_nController.selectedRecurrence + 1} ${_nController.selectedRecurrence > 1 ? "heures" : "heure"} de rappel",
                     style: const TextStyle(fontWeight: FontWeight.bold),
                   ),
                 ),

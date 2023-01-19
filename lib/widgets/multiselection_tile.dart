@@ -35,7 +35,7 @@ class _MultiSelectionTileState extends State<MultiSelectionTile> {
         isChecked = false;
         _notificationCreationController.removeHours(widget.value);
       } else {
-        if(_notificationCreationController.selectedHours.length < _notificationCreationController.selectedReccu+1){
+        if(_notificationCreationController.selectedHours.length < _notificationCreationController.selectedRecurrence+1){
           isChecked = true;
           _notificationCreationController.addHours(widget.value);
         } else {
