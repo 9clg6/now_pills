@@ -6,10 +6,12 @@ import 'package:now_pills/services/notification_service.dart';
 import 'package:timezone/timezone.dart';
 
 class NotificationCreationController extends ChangeNotifier {
-  int _selectedDuration = 0;
-  int get selectedDuration => _selectedDuration;
+  int _notificationCounter = 0;
+  int get notificationCounter => _notificationCounter;
 
-  set selectedDuration(int value) {
+  String _selectedDuration = possibleDuration.first;
+  String get selectedDuration => _selectedDuration;
+  set selectedDuration(String value) {
     _selectedDuration = value;
     Logger().i("Selected duration: $selectedDuration");
     notifyListeners();
@@ -18,12 +20,19 @@ class NotificationCreationController extends ChangeNotifier {
   int _selectedReccu = 0;
   int get selectedReccu => _selectedReccu;
 
-  List<int> _selectedHours = [];
+  final _selectedHours = <int>[];
   List<int> get selectedHours => _selectedHours;
 
   set selectedReccu(int value) {
     _selectedReccu = value;
     notifyListeners();
+  }
+
+  int increaseCounter(){
+    _notificationCounter++;
+    notifyListeners();
+    Logger().i("New counter: $notificationCounter");
+    return notificationCounter;
   }
 
   void addHours(int value){
@@ -36,14 +45,11 @@ class NotificationCreationController extends ChangeNotifier {
     notifyListeners();
   }
 
-  set selectedHours(List<int> value) {
-    _selectedHours = value;
-    notifyListeners();
-  }
-
-  Future<void> configureNotification(String pillName) async {
+  Future<void> configureNotification(String pillName, NotificationCreationController nController) async {
     final now = DateTime.now();
-    for(int i = 0 ; i <= selectedDuration+2 ; i++){
+    final duration = int.parse(selectedDuration[0]);
+
+    for(int i = 0 ; i < duration ; i++){
       for (final hourIndex in selectedHours) {
         final splitHour = possibleHours.elementAt(hourIndex).split("h");
         final scheduleDate = TZDateTime(local, now.year, now.month, now.day, int.parse(splitHour.first), int.parse(splitHour.last));
@@ -55,11 +61,11 @@ class NotificationCreationController extends ChangeNotifier {
             endTime: scheduleDate,
             sound: 'pills_notif.mp3', //Add this
             channel: "live",
-            id: i,
-          ).then((_) => Logger().i("Notification scheduled for: ${DateTime.fromMillisecondsSinceEpoch(scheduleDate.millisecondsSinceEpoch)}"));
+            id: nController.increaseCounter(),
+          );
 
         } else {
-          if(selectedReccu == 1 && selectedDuration == 1){
+          if(selectedReccu == 1 && int.parse(selectedDuration[0]) == 1){
             Logger().e("Can't schedule dat anterior date");
             throw ScheduleException("Can't schedule at anterior date");
           }

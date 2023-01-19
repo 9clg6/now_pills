@@ -52,7 +52,7 @@ class _HomePageState extends State<HomePage> {
                         if (_formKey.currentState != null) {
                           if (_formKey.currentState!.validate() && _nController.selectedHours.isNotEmpty) {
                             try {
-                              _nController.configureNotification(_pillNameInputController.text);
+                              _nController.configureNotification(_pillNameInputController.text, _nController);
                               /*
                               showDialog(
                                 context: context,
@@ -89,7 +89,7 @@ class _HomePageState extends State<HomePage> {
     return AlertDialog(
       title: const Text("On a hâte !"),
       content:
-          _nController.selectedDuration > 1 || _nController.selectedReccu > 1 || _nController.selectedHours.length > 1
+          int.parse(_nController.selectedDuration[0]) > 1 || _nController.selectedReccu > 1 || _nController.selectedHours.length > 1
               ? const Text("Vos alertes ont été créees avec succès ! 💊")
               : const Text("Votre alerte a été créee avec succès ! 💊"),
       actions: [
@@ -119,7 +119,7 @@ class _HomePageState extends State<HomePage> {
             ),
             const SizedBox(height: 3),
             Text(
-              "(Actuellement ${possibleDuration.elementAt(_nController.selectedDuration)})",
+              "(Actuellement ${_nController.selectedDuration})",
               style: standardTextStyle,
             )
           ],

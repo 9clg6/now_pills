@@ -77,8 +77,7 @@ class NotificationService {
     );
 
     for (final element in (await localNotificationsPlugin.pendingNotificationRequests())) {
-      Logger().wtf("Pending notif : ${element.id}");
-      Logger().wtf("Time notif : $endTime");
+      Logger().wtf("Pending notif : ${element.id} Time: $endTime");
 
     }
   }

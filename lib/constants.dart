@@ -15,6 +15,7 @@ final possibleRecurrences = <String>[
 ];
 
 final possibleDuration = <String>[
+  '1 jours',
   '2 jours',
   '3 jours',
   '4 jours',

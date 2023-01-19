@@ -12,11 +12,12 @@ class DurationDialog extends StatefulWidget {
 
 class _DurationDialogState extends State<DurationDialog> {
   late NotificationCreationController _nController;
-  int _tempSelectedDuration = 0;
+  late String _tempSelectedDuration;
 
   @override
   Widget build(BuildContext context) {
     _nController = Provider.of<NotificationCreationController>(context);
+    _tempSelectedDuration = _nController.selectedDuration;
 
     return AlertDialog(
       title: const Text("Choisissez la durée du traitement (dont aujourd'hui)"),
@@ -39,20 +40,18 @@ class _DurationDialogState extends State<DurationDialog> {
         mainAxisSize: MainAxisSize.min,
         children: [
           DropdownButtonHideUnderline(
-            child: DropdownButton<int>(
+            child: DropdownButton<String>(
               items: possibleDuration
-                  .map(
-                    (e) => DropdownMenuItem(
-                  value: possibleDuration.indexOf(e),
-                  child: Text(
-                    e,
-                    style: TextStyle(
-                      fontSize: 15,
-                      color: Colors.black.withOpacity(0.6),
-                    ),
-                  ),
-                ),
-              )
+                  .map((e) => DropdownMenuItem(
+                        value: e,
+                        child: Text(
+                          e,
+                          style: TextStyle(
+                            fontSize: 15,
+                            color: Colors.black.withOpacity(0.6),
+                          ),
+                        ),
+                      ))
                   .toList(),
               onChanged: (value) {
                 if (value != null) {
@@ -66,6 +65,4 @@ class _DurationDialogState extends State<DurationDialog> {
       ),
     );
   }
-
-
 }
