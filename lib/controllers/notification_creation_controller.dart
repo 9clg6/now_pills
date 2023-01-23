@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:logger/logger.dart';
 import 'package:now_pills/constants.dart';
 import 'package:now_pills/exceptions/empty_selected_hours_exception.dart';
 import 'package:now_pills/exceptions/schedule_exception.dart';
