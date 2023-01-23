@@ -138,11 +138,14 @@ class _HomePageState extends State<HomePage> {
   }
 
   Align _buildCGU() {
-    return const Align(
+    return Align(
       alignment: Alignment.bottomCenter,
-      child: Text(
-        "Conditions Générales d'Utilisation",
-        style: standardTextStyle,
+      child: InkWell(
+        onTap: () => Navigator.of(context).pushNamed("/cgu"),
+        child: const Text(
+          "Conditions Générales d'Utilisation",
+          style: standardTextStyle,
+        ),
       ),
     );
   }
