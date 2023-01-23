@@ -5,6 +5,11 @@ const standardTextStyle = TextStyle(
   color: Colors.white,
   fontSize: 15,
 );
+final mainShadow = BoxShadow(
+  color: Colors.black.withOpacity(0.5),
+  offset: const Offset(-3, 4),
+);
+const cguTitle = TextStyle(fontWeight: FontWeight.bold);
 
 final possibleRecurrences = <String>[
   '1 fois par jour',

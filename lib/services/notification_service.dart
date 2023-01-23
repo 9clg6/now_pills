@@ -13,7 +13,7 @@ class NotificationService {
 
   NotificationService._internal();
 
-  factory NotificationService(){
+  factory NotificationService() {
     _instance.localNotificationsPlugin = FlutterLocalNotificationsPlugin();
     return _instance;
   }
@@ -31,7 +31,7 @@ class NotificationService {
     const initSettings = InitializationSettings(android: androidSetting, iOS: iosSetting);
 
     _isInitialized = await localNotificationsPlugin.initialize(initSettings) ?? false;
-    if(_isInitialized){
+    if (_isInitialized) {
       Logger().i("LocalNotificationsPlugin initialized ✅");
     } else {
       Logger().e("LocalNotificationsPlugin initialization fail ❌");
@@ -46,7 +46,7 @@ class NotificationService {
     required String sound,
     required int id,
   }) async {
-    if(_isInitialized){
+    if (_isInitialized) {
       final soundFile = sound.replaceAll('.mp3', '');
       final notificationSound = sound == '' ? null : RawResourceAndroidNotificationSound(soundFile);
       final androidDetail = AndroidNotificationDetails(
@@ -60,9 +60,7 @@ class NotificationService {
         channelShowBadge: true,
       );
 
-      final iosDetail = sound == ''
-          ? null
-          : DarwinNotificationDetails(presentSound: true, sound: sound);
+      final iosDetail = sound == '' ? null : DarwinNotificationDetails(presentSound: true, sound: sound);
 
       final noticeDetail = NotificationDetails(
         iOS: iosDetail,
@@ -79,7 +77,10 @@ class NotificationService {
         androidAllowWhileIdle: true,
       );
     } else {
-      throw PluginNotInitializedException("LocalNotificationPlugin is not initialized");
+      throw PluginNotInitializedException(
+        "LocalNotificationPlugin is not initialized",
+        "Une erreur interne c'est produite",
+      );
     }
   }
 }

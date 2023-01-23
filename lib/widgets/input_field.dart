@@ -35,12 +35,7 @@ class _CustomBtnState extends State<CustomBtn> {
             color: Colors.white,
             borderRadius: BorderRadius.circular(20),
             boxShadow: [
-              !isClicked
-                  ? BoxShadow(
-                      color: Colors.black.withOpacity(0.5),
-                      offset: const Offset(-3, 4),
-                    )
-                  : const BoxShadow(),
+              if(!isClicked) mainShadow
             ],
           ),
           padding: const EdgeInsets.symmetric(

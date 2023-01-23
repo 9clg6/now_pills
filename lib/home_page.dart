@@ -3,6 +3,9 @@ import 'package:flutter/services.dart';
 import 'package:logger/logger.dart';
 import 'package:now_pills/constants.dart';
 import 'package:now_pills/controllers/notification_creation_controller.dart';
+import 'package:now_pills/exceptions/custom_exception.dart';
+import 'package:now_pills/widgets/app_title.dart';
+import 'package:now_pills/widgets/custom_dialog.dart';
 import 'package:now_pills/widgets/duration_dialog.dart';
 import 'package:now_pills/widgets/input_field.dart';
 import 'package:now_pills/widgets/multiselection_tile.dart';
@@ -38,42 +41,16 @@ class _HomePageState extends State<HomePage> {
           child: Stack(
             alignment: Alignment.center,
             children: [
-              _buildTitle(context),
+              AppTitle(top: MediaQuery.of(context).size.height/5),
               Baseline(
                 baselineType: TextBaseline.alphabetic,
-                baseline: MediaQuery.of(context).size.height / 2,
+                baseline: MediaQuery.of(context).size.height/2,
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     _buildInputBox(),
-                    CustomBtn(
-                      title: "Je vais me rappeler, promis",
-                      onClick: () {
-                        if (_formKey.currentState != null) {
-                          if (_formKey.currentState!.validate() && _nController.selectedHours.isNotEmpty) {
-                            try {
-                              _nController.configureNotification(_pillNameInputController.text, _nController);
-
-                              showDialog(
-                                context: context,
-                                builder: (context) {
-                                  return _buildSuccessDialog();
-                                },
-                              );
-
-                            } catch (e) {
-                              showDialog(
-                                context: context,
-                                builder: (_) {
-                                  return _buildErrorDialog(context, e as String);
-                                },
-                              );
-                            }
-                          }
-                        }
-                      },
-                    ),
-                    _buildDurationSelectionBtn(context),
+                    _buildCreateBtn(),
+                    _buildDurationSelectionBtn(),
                   ],
                 ),
               ),
@@ -85,13 +62,57 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
+  CustomBtn _buildCreateBtn() {
+    return CustomBtn(
+      title: "Je vais me rappeler, promis",
+      onClick: () {
+        if (_isEmptyFormFieldClicked) {
+          if (_formKey.currentState != null && _formKey.currentState!.validate()) {
+            try {
+              _nController.configureNotification(_pillNameInputController.text, _nController);
+              showDialog(
+                context: context,
+                builder: (_) => _buildSuccessDialog(),
+              );
+            } on CustomException catch (e) {
+              showDialog(
+                context: context,
+                builder: (_) {
+                  return CustomDialog(
+                    title: "Ooops... une erreur c'est produite",
+                    body: e.message,
+                    onTap: Navigator.of(context).pop,
+                    actionBtnText: "Dommage",
+                  );
+                },
+              );
+            }
+          }
+        } else {
+          showDialog(
+            context: context,
+            builder: (_) {
+              return CustomDialog(
+                title: "Il faut nous aider...",
+                body: "Sélectionnez la boîte et texte et remplissez les champs",
+                onTap: Navigator.of(context).pop,
+                actionBtnText: "Bon...ok",
+              );
+            },
+          );
+        }
+      },
+    );
+  }
+
   AlertDialog _buildSuccessDialog() {
     return AlertDialog(
       title: const Text("On a hâte !"),
-      content:
-          int.parse(_nController.selectedDuration[0]) > 1 || _nController.selectedRecurrence > 1 || _nController.selectedHours.length > 1
-              ? const Text("Vos alertes ont été créees avec succès ! 💊")
-              : const Text("Votre alerte a été créee avec succès ! 💊"),
+      content: int.parse(_nController.selectedDuration[0]) > 1 ||
+              _nController.selectedRecurrence > 1 ||
+              _nController.selectedHours.length > 1
+          ? const Text("Vos alertes ont été créees avec succès ! 💊")
+          : const Text("Votre alerte a été créee avec succès ! 💊"),
       actions: [
         TextButton(
           onPressed: Navigator.of(context).pop,
@@ -104,13 +125,11 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
-  Widget _buildDurationSelectionBtn(BuildContext context) {
+  Widget _buildDurationSelectionBtn() {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 15),
       child: InkWell(
-        onTap: () {
-          _buildDurationSelectionDialog(context);
-        },
+        onTap: () => _buildDurationSelectionDialog(context),
         child: Column(
           children: [
             const Text(
@@ -131,13 +150,11 @@ class _HomePageState extends State<HomePage> {
   Future<dynamic> _buildDurationSelectionDialog(BuildContext context) {
     return showDialog(
       context: context,
-      builder: (dialogContext) {
-        return const DurationDialog();
-      },
+      builder: (_) => const DurationDialog(),
     );
   }
 
-  Align _buildCGU() {
+  Widget _buildCGU() {
     return Align(
       alignment: Alignment.bottomCenter,
       child: InkWell(
@@ -150,52 +167,9 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
-  AlertDialog _buildErrorDialog(BuildContext context, String e) {
-    return AlertDialog(
-      title: const Text("Ooops... une erreur c'est produite"),
-      content: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Text(e),
-        ],
-      ),
-      actions: [
-        TextButton(
-          onPressed: () => Navigator.of(context).pop(),
-          child: const Text("Dommage", style: TextStyle(color: mainColor)),
-        ),
-      ],
-    );
-  }
-
   void _resetFocus() {
     FocusManager.instance.primaryFocus?.unfocus();
-    setState(() {
-      _isEmptyFormFieldClicked = false;
-    });
-  }
-
-  Positioned _buildTitle(BuildContext context) {
-    return Positioned(
-      top: MediaQuery.of(context).size.height / 5,
-      child: Container(
-        alignment: Alignment.center,
-        child: Text(
-          "NowPills",
-          style: TextStyle(
-            color: Colors.white,
-            fontSize: 60,
-            fontWeight: FontWeight.bold,
-            shadows: [
-              BoxShadow(
-                color: Colors.black.withOpacity(0.5),
-                offset: const Offset(-3, 4),
-              ),
-            ],
-          ),
-        ),
-      ),
-    );
+    setState(() => _isEmptyFormFieldClicked = false);
   }
 
   Widget _buildFakeForm() {
@@ -230,9 +204,7 @@ class _HomePageState extends State<HomePage> {
         ),
         Expanded(
           child: InkWell(
-            onTap: () async {
-              await _buildHoursSelectionDialog(possibleHours);
-            },
+            onTap: () => _buildHoursSelectionDialog(possibleHours),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
@@ -251,14 +223,14 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
-  Form _buildPillsNameField() {
+  Widget _buildPillsNameField() {
     return Form(
       key: _formKey,
       child: TextFormField(
         focusNode: _focusNode,
         validator: (value) {
           if (value == null || value.isEmpty || value == "") {
-            return "Merci de rentrer le nom d'une pillule";
+            return "Champs obligatoire (nom pillule)";
           }
           return null;
         },
@@ -275,7 +247,7 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
-  DropdownButtonHideUnderline _buildDropdownRecurrence() {
+  Widget _buildDropdownRecurrence() {
     return DropdownButtonHideUnderline(
       child: DropdownButton<String>(
         icon: const SizedBox.shrink(),
@@ -306,7 +278,8 @@ class _HomePageState extends State<HomePage> {
   }
 
   String buildDisplayText() {
-    if (_nController.selectedHours.length < _nController.selectedRecurrence + 1 && _nController.selectedHours.isNotEmpty) {
+    if (_nController.selectedHours.length < _nController.selectedRecurrence + 1 &&
+        _nController.selectedHours.isNotEmpty) {
       return "⏳";
     } else if (_nController.selectedHours.length == _nController.selectedRecurrence + 1) {
       return "✅";

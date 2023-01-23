@@ -1,10 +1,8 @@
 class CustomException implements Exception{
-  String e;
+  String cause, message;
 
-  CustomException(this.e);
+  CustomException(this.cause, this.message);
 
   @override
-  String toString() {
-    return e;
-  }
+  String toString() => cause;
 }
