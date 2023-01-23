@@ -54,7 +54,7 @@ class _HomePageState extends State<HomePage> {
                   ],
                 ),
               ),
-              _buildCGU(),
+              _buildCGUbtn(),
             ],
           ),
         ),
@@ -62,7 +62,7 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
-  CustomBtn _buildCreateBtn() {
+  Widget _buildCreateBtn() {
     return CustomBtn(
       title: "Je vais me rappeler, promis",
       onClick: () {
@@ -79,7 +79,7 @@ class _HomePageState extends State<HomePage> {
                 context: context,
                 builder: (_) {
                   return CustomDialog(
-                    title: "Ooops... une erreur c'est produite",
+                    title: "Ooops...",
                     body: e.message,
                     onTap: Navigator.of(context).pop,
                     actionBtnText: "Dommage",
@@ -94,7 +94,7 @@ class _HomePageState extends State<HomePage> {
             builder: (_) {
               return CustomDialog(
                 title: "Il faut nous aider...",
-                body: "Sélectionnez la boîte et texte et remplissez les champs",
+                body: "Sélectionnez la boîte de texte et remplissez les champs",
                 onTap: Navigator.of(context).pop,
                 actionBtnText: "Bon...ok",
               );
@@ -154,7 +154,7 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
-  Widget _buildCGU() {
+  Widget _buildCGUbtn() {
     return Align(
       alignment: Alignment.bottomCenter,
       child: InkWell(

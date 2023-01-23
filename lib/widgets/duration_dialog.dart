@@ -14,11 +14,16 @@ class _DurationDialogState extends State<DurationDialog> {
   late NotificationCreationController _nController;
   late String _tempSelectedDuration;
 
+
+  @override
+  void initState() {
+    _nController = Provider.of<NotificationCreationController>(context, listen: false);
+    _tempSelectedDuration = _nController.selectedDuration;
+    super.initState();
+  }
+
   @override
   Widget build(BuildContext context) {
-    _nController = Provider.of<NotificationCreationController>(context);
-    _tempSelectedDuration = _nController.selectedDuration;
-
     return AlertDialog(
       title: const Text("Choisissez la durée du traitement (dont aujourd'hui)"),
       actions: [

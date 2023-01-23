@@ -69,7 +69,7 @@ class NotificationCreationController extends ChangeNotifier {
             id: nController.increaseCounter(),
           );
         } else {
-          if (selectedRecurrence == 1 && int.parse(selectedDuration[0]) == 1) {
+          if (selectedRecurrence == 0 && int.parse(selectedDuration[0]) == 1) {
             throw ScheduleException(
               "Can't schedule at anterior date",
               "Vous ne pouvez pas programmer un rappel à une date antérieure",
