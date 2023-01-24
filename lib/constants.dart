@@ -73,5 +73,5 @@ final possibleHours = <String>[
   '22h30',
   '23h00',
   '23h30',
-  '00h00',
+  '23h59',
 ];
