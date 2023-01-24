@@ -1,3 +1,5 @@
+import 'dart:ui';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:logger/logger.dart';
@@ -18,47 +20,99 @@ class HomePage extends StatefulWidget {
   State<HomePage> createState() => _HomePageState();
 }
 
-class _HomePageState extends State<HomePage> {
+class _HomePageState extends State<HomePage> with SingleTickerProviderStateMixin {
   final _pillNameInputController = TextEditingController();
   final _formKey = GlobalKey<FormState>();
-
   bool _isEmptyFormFieldClicked = false;
   final _focusNode = FocusNode();
-
   late NotificationCreationController _nController;
+  late AnimationController _animationController;
+  late Animation _animation;
+
+  @override
+  void initState() {
+    super.initState();
+    _animationController = AnimationController(vsync: this, duration: const Duration(seconds: 1, milliseconds: 500));
+    _animation = Tween<double>(begin: 0, end: -25).animate(
+      CurvedAnimation(parent: _animationController, curve: Curves.elasticInOut),
+    );
+
+    _animation.addListener(() {
+      if (_animation.isCompleted) {
+        Future.delayed(
+          const Duration(seconds: 1),
+          () {
+            _animationController.reverse();
+          },
+        );
+      } else if (_animation.isDismissed) {
+        Future.delayed(
+          const Duration(seconds: 15),
+          () {
+            _animationController.forward();
+          },
+        );
+      }
+    });
+
+    Future.delayed(
+      const Duration(seconds: 10),
+      () => _animationController.forward(),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
     _nController = Provider.of<NotificationCreationController>(context);
 
-    return GestureDetector(
-      onTap: () => _resetFocus(),
-      child: Scaffold(
-        backgroundColor: mainColor,
-        resizeToAvoidBottomInset: false,
-        body: Padding(
-          padding: const EdgeInsets.symmetric(vertical: 10),
-          child: Stack(
-            alignment: Alignment.center,
-            children: [
-              AppTitle(top: MediaQuery.of(context).size.height/5),
-              Baseline(
-                baselineType: TextBaseline.alphabetic,
-                baseline: MediaQuery.of(context).size.height/2,
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    _buildInputBox(),
-                    _buildCreateBtn(),
-                    _buildDurationSelectionBtn(),
-                  ],
+    return Stack(
+      children: [
+        Container(
+          color: Colors.white,
+          width: double.infinity,
+          height: double.infinity,
+        ),
+        Positioned.fill(
+          child: AnimatedBuilder(
+            animation: _animation,
+            builder: (context, child) {
+              return Transform.translate(
+                offset: Offset(_animation.value, 0),
+                child: child,
+              );
+            },
+            child: GestureDetector(
+              onTap: () => _resetFocus(),
+              child: Scaffold(
+                backgroundColor: mainColor,
+                resizeToAvoidBottomInset: false,
+                body: Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 10),
+                  child: Stack(
+                    alignment: Alignment.center,
+                    children: [
+                      AppTitle(top: MediaQuery.of(context).size.height / 5),
+                      Baseline(
+                        baselineType: TextBaseline.alphabetic,
+                        baseline: MediaQuery.of(context).size.height / 2,
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            _buildInputBox(),
+                            _buildCreateBtn(),
+                            _buildDurationSelectionBtn(),
+                          ],
+                        ),
+                      ),
+                      _buildCGUbtn(),
+                    ],
+                  ),
                 ),
               ),
-              _buildCGUbtn(),
-            ],
+            ),
           ),
         ),
-      ),
+      ],
     );
   }
 
