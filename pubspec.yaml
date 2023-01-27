@@ -37,6 +37,8 @@ dependencies:
   flutter_native_timezone: ^2.0.0
   provider: ^6.0.5
   logger: ^1.1.0
+  intl: ^0.18.0
+  flutter_launcher_icons: ^0.11.0
 dev_dependencies:
   flutter_test:
     sdk: flutter
@@ -47,6 +49,12 @@ dev_dependencies:
   # package. See that file for information about deactivating specific lint
   # rules and activating additional ones.
   flutter_lints: ^2.0.0
+
+flutter_icons:
+  android: "app_image"
+  ios: true
+  image_path: "assets/app_image.png"
+
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec

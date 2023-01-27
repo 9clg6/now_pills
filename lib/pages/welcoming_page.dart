@@ -29,9 +29,7 @@ class _WelcomingPageState extends State<WelcomingPage> with SingleTickerProvider
 
   @override
   void dispose() {
-    _animationController.dispose();
-    _pillNameInputController.dispose();
-    _nController.dispose();
+    _animationController.stop();
     super.dispose();
   }
 
@@ -106,13 +104,25 @@ class _WelcomingPageState extends State<WelcomingPage> with SingleTickerProvider
                           ],
                         ),
                       ),
-                      _buildCGUbtn(),
                     ],
                   ),
                 ),
               ),
             ),
           ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildCGUbtn() {
+    return Align(
+      alignment: Alignment.bottomCenter,
+      child: InkWell(
+        onTap: () => Navigator.of(context).pushNamed("/cgu"),
+        child: const Text(
+          "Conditions Générales d'Utilisation",
+          style: standardTextStyle,
         ),
       ),
     );
@@ -207,19 +217,6 @@ class _WelcomingPageState extends State<WelcomingPage> with SingleTickerProvider
     return showDialog(
       context: context,
       builder: (_) => const DurationDialog(),
-    );
-  }
-
-  Widget _buildCGUbtn() {
-    return Align(
-      alignment: Alignment.bottomCenter,
-      child: InkWell(
-        onTap: () => Navigator.of(context).pushNamed("/cgu"),
-        child: const Text(
-          "Conditions Générales d'Utilisation",
-          style: standardTextStyle,
-        ),
-      ),
     );
   }
 
@@ -383,7 +380,9 @@ class _WelcomingPageState extends State<WelcomingPage> with SingleTickerProvider
                           },
                           child: Container(
                             alignment: Alignment.center,
-                            decoration: BoxDecoration(border: Border.all(color: mainColor)),
+                            decoration: BoxDecoration(
+                              border: Border.all(color: mainColor),
+                            ),
                             padding: const EdgeInsets.symmetric(vertical: 20),
                             child: const Text("Annuler"),
                           ),
@@ -394,7 +393,10 @@ class _WelcomingPageState extends State<WelcomingPage> with SingleTickerProvider
                           onTap: Navigator.of(dialogContext, rootNavigator: true).pop,
                           child: Container(
                             padding: const EdgeInsets.symmetric(vertical: 20),
-                            color: mainColor,
+                            decoration: BoxDecoration(
+                              border: Border.all(color: mainColor),
+                              color: mainColor,
+                            ),
                             alignment: Alignment.center,
                             child: const Text(
                               "Confirmer",

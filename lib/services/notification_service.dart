@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:flutter_native_timezone/flutter_native_timezone.dart';
 import 'package:logger/logger.dart';
@@ -44,6 +46,7 @@ class NotificationService {
     required String channel,
     required String sound,
     required int id,
+    Map<String, dynamic>? payload,
   }) async {
     if (_isInitialized) {
       final soundFile = sound.replaceAll('.mp3', '');
@@ -66,6 +69,8 @@ class NotificationService {
         android: androidDetail,
       );
 
+      Logger().wtf("ID added: $id");
+
       await localNotificationsPlugin.zonedSchedule(
         id,
         title,
@@ -74,6 +79,7 @@ class NotificationService {
         noticeDetail,
         uiLocalNotificationDateInterpretation: UILocalNotificationDateInterpretation.absoluteTime,
         androidAllowWhileIdle: true,
+        payload: jsonEncode(payload),
       );
     } else {
       throw PluginNotInitializedException(

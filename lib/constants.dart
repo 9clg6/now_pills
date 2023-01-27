@@ -15,8 +15,6 @@ final possibleRecurrences = <String>[
   '1 fois par jour',
   '2 fois par jour',
   '3 fois par jour',
-  '4 fois par jour',
-  '5 fois par jour',
 ];
 
 final possibleDuration = <String>[
@@ -27,9 +25,6 @@ final possibleDuration = <String>[
   '5 jours',
   '6 jours',
   '7 jours',
-  '8 jours',
-  '9 jours',
-  '10 jours',
 ];
 
 final possibleHours = <String>[

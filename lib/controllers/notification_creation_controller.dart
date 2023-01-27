@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:logger/logger.dart';
 import 'package:now_pills/constants.dart';
 import 'package:now_pills/exceptions/empty_selected_hours_exception.dart';
 import 'package:now_pills/exceptions/schedule_exception.dart';
@@ -6,6 +7,8 @@ import 'package:now_pills/services/notification_service.dart';
 import 'package:timezone/timezone.dart';
 
 class NotificationCreationController extends ChangeNotifier {
+  int _creationCounter = 0;
+
   int _notificationCounter = 0;
   int get notificationCounter => _notificationCounter;
 
@@ -55,20 +58,27 @@ class NotificationCreationController extends ChangeNotifier {
 
     for (int i = 0; i < duration; i++) {
       for (final hourIndex in selectedHours) {
-        final splitHour = possibleHours.elementAt(hourIndex).split("h");
-        final scheduleDate =
-            TZDateTime(local, now.year, now.month, now.day, int.parse(splitHour.first), int.parse(splitHour.last));
+        final sHString = possibleHours.elementAt(hourIndex);
+        final splitHour = sHString.split("h");
+        final scheduleDate = TZDateTime(local, now.year, now.month, now.day+i, int.parse(splitHour.first), int.parse(splitHour.last));
 
         if (scheduleDate.millisecondsSinceEpoch > now.millisecondsSinceEpoch) {
+          Logger().v("Added: ${_creationCounter++}");
+
           NotificationService().addNotification(
             title: "NowPills",
-            body: "C'est l'heure de votre pillule $pillName",
+            body: "C'est l'heure de votre pillule \"$pillName\" 💊",
             endTime: scheduleDate,
             sound: 'pills_notif.mp3', //Add this
             channel: "live",
             id: nController.increaseCounter(),
+            payload: {
+              "endTime": scheduleDate.millisecondsSinceEpoch,
+              "pillName": pillName,
+            },
           );
         } else {
+          Logger().e("Can't schedule at anterior date");
           if (selectedRecurrence == 0 && int.parse(selectedDuration[0]) == 1) {
             throw ScheduleException(
               "Can't schedule at anterior date",

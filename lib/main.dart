@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:intl/date_symbol_data_local.dart';
 import 'package:now_pills/controllers/notification_creation_controller.dart';
 import 'package:now_pills/pages/home_page.dart';
 import 'package:now_pills/pages/cgu_page.dart';
@@ -16,6 +17,7 @@ Future<void> main() async {
 
   final notifService = NotificationService();
   await notifService.setup();
+  await initializeDateFormatting('fr_FR', null);
 
   runApp(
     MultiProvider(
