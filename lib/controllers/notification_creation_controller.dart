@@ -60,7 +60,8 @@ class NotificationCreationController extends ChangeNotifier {
       for (final hourIndex in selectedHours) {
         final sHString = possibleHours.elementAt(hourIndex);
         final splitHour = sHString.split("h");
-        final scheduleDate = TZDateTime(local, now.year, now.month, now.day+i, int.parse(splitHour.first), int.parse(splitHour.last));
+        final scheduleDate =
+            TZDateTime(local, now.year, now.month, now.day + i, int.parse(splitHour.first), int.parse(splitHour.last));
 
         if (scheduleDate.millisecondsSinceEpoch > now.millisecondsSinceEpoch) {
           Logger().v("Added: ${_creationCounter++}");
@@ -69,7 +70,7 @@ class NotificationCreationController extends ChangeNotifier {
             title: "NowPills",
             body: "C'est l'heure de votre pillule \"$pillName\" 💊",
             endTime: scheduleDate,
-            sound: 'pills_notif.mp3', //Add this
+            sound: 'pillsNotif.mp3', //Add this
             channel: "live",
             id: nController.increaseCounter(),
             payload: {
